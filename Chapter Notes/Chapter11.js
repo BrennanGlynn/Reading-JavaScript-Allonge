@@ -209,7 +209,7 @@ function asColorCoded() {
         this.colorCode = {r: r, g: g, b: b};
     });
 
-    this.setColorRGB = function () {
+    this.getColorRGB = function () {
         return this.colorCode;
     };
 
@@ -218,6 +218,51 @@ function asColorCoded() {
 
 asColorCoded.call(Todo.prototype);
 console.log(Todo.prototype);
+
+// It’s possible to write a context-agnostic functional mixin
+
+function originated() {
+    if (arguments[0] !== void 0) {
+        return originated.call(arguments[0])
+    }
+    this.setCountry = fluent( function (country) {
+        this.country = country;
+    });
+    this.getCountry = function () {
+        return this.country
+    };
+    return this
+}
+
+function wake() {
+    if (arguments[0] !== void 0) {
+        return wake.call(arguments[0])
+    }
+    this.awake = fluent( function () {
+        this.woke = true;
+    });
+    this.fool = fluent( function () {
+        this.woke = false;
+    })
+}
+
+var person = function (name) {
+    var self = this instanceof person ? this : new person();
+    self.name = name || 'Anon';
+    self.woke = false;
+    return self;
+};
+
+originated(person.prototype);
+wake(person.prototype);
+console.log(person.prototype);
+var jerry = person('Jerry');
+jerry.setCountry('Germany');
+jerry.awake();
+console.log(jerry.getCountry());
+console.log(jerry.woke);
+jerry.fool();
+console.log(jerry.woke);
 
 //////////////////////////////////////////////////////////////////
 //                       Class Decorators                       //
