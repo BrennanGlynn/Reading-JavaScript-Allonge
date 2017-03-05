@@ -2,7 +2,7 @@
 //                          Chapter 11                          //
 //                           Functions                          //
 //////////////////////////////////////////////////////////////////
-var print = console.log;
+
 //////////////////////////////////////////////////////////////////
 //                          Chapter 11                          //
 //                           New Ideas                          //
@@ -37,7 +37,7 @@ new square(2).constructor;
 
 function Nullo() {};
 
-print(Nullo.prototype);
+Nullo.prototype;
 // => Nullo {}
 
 // prototype is an ordinary object with exactly the same properties that we expect to find in an instance:
@@ -47,5 +47,53 @@ print(Nullo.prototype);
 // by adding functions to it as properties.
 
 //////////////////////////////////////////////////////////////////
-//               New-Agnostic Constructor Pattern               //
+//                   New-Agnostic Constructor                   //
+//////////////////////////////////////////////////////////////////
+
+// JavaScript is inflexible about invoking "new" on a constructor
+
+function User (name, password) {
+    if(!(this instanceof User)) {
+        return new User(name, password);
+    }
+    this.name = name || 'Untitled';
+    this.password = password;
+};
+
+// Now you can call the constructor without the "new" keyword
+
+var a = User('Brennan', '3liteh4ks');
+console.log(a.constructor);
+
+// This in turn opens up the possibility of doing dynamic things with constructors
+// that didn't work when you were forced to use "new"
+
+function withDefaultPassword () {
+    var args = Array.prototype.slice.call(arguments, 0);
+    args[1] = 'swordfish';
+    return User.apply(this, args);
+}
+
+console.log(withDefaultPassword('Hannah'));
+
+// The pattern above has a tradeoff: It works for all circumstances except when you want to set up an inheritance hierarchy.
+
+//////////////////////////////////////////////////////////////////
+//            Another New-Agnostic Constructor Patter           //
+//////////////////////////////////////////////////////////////////
+
+function User2 (name, password) {
+    var self = this instanceof User ? this : new User();
+    if (name != null) {
+        self.name = name;
+        self.password = password;
+    }
+    return self;
+}
+
+console.log(User2('Mike', 'Hunt'));
+console.log(new User2('Brennan', 'Glynn'));
+
+//////////////////////////////////////////////////////////////////
+//                            Mixins                            //
 //////////////////////////////////////////////////////////////////
