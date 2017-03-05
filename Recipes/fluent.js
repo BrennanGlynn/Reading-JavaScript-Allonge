@@ -95,4 +95,6 @@ Cake.prototype.bake = fluent( function () {
     // and possibly multiple returns
 });
 
+console.log(Cake.prototype);
+
 console.log(cake.bake());
