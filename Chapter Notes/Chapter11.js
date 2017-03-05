@@ -199,5 +199,26 @@ function becomeColorCoded (target) {
     return target;
 }
 
-becomeColorCoded(Todo.prototype);
+// becomeColorCoded(Todo.prototype);
+// console.log(Todo.prototype);
+
+// You could mix functionality directly into an object if you so choose.
+
+function asColorCoded() {
+    this.setColorRGB = fluent( function (r, g, b) {
+        this.colorCode = {r: r, g: g, b: b};
+    });
+
+    this.setColorRGB = function () {
+        return this.colorCode;
+    };
+
+    return this;
+}
+
+asColorCoded.call(Todo.prototype);
 console.log(Todo.prototype);
+
+//////////////////////////////////////////////////////////////////
+//                       Class Decorators                       //
+//////////////////////////////////////////////////////////////////
