@@ -216,8 +216,8 @@ function asColorCoded() {
     return this;
 }
 
-asColorCoded.call(Todo.prototype);
-console.log(Todo.prototype);
+// asColorCoded.call(Todo.prototype);
+// console.log(Todo.prototype);
 
 // It’s possible to write a context-agnostic functional mixin
 
@@ -266,4 +266,50 @@ console.log(jerry.woke);
 
 //////////////////////////////////////////////////////////////////
 //                       Class Decorators                       //
+//////////////////////////////////////////////////////////////////
+
+// The function decorator pattern being discussed here only works with constructors that are new-agnostic
+// Here is ColorCoded as a class decorator
+// It returns a new class rather than modifying Todo
+
+function AndColorCoded (clazz) {
+    function Decorated () {
+        var self = this instanceof Decorated ? this : new Decorated();
+        return clazz.apply(self, arguments);
+    }
+    Decorated.prototype = new clazz();
+
+    Decorated.prototype.setColorRGB = fluent( function (r, g, b) {
+        this.colorCode = { r: r, g: g, b: b };
+    });
+
+    Decorated.prototype.getColorRGB = function () {
+        return this.colorCode
+    };
+
+    return Decorated;
+}
+
+var ColorTodo = AndColorCoded(Todo);
+
+console.log(Todo.prototype);
+
+var colorTodo = new ColorTodo('Write more JavaScript');
+colorTodo.setColorRGB(255, 200, 200);
+console.log(Todo.prototype);
+// => { do: [Function], undo: [Function] }
+
+console.log(colorTodo);
+// => { name: 'Write more JavaScript', done: false, colorCode: { r: 255, g: 200, b: 200 }
+
+console.log(colorTodo instanceof Todo);
+// => true
+
+console.log(colorTodo instanceof ColorTodo);
+// => true
+
+// Class decorators can be an improvement when you don't want to modify an existing prototype
+
+//////////////////////////////////////////////////////////////////
+//                     Functional Iterators                     //
 //////////////////////////////////////////////////////////////////
