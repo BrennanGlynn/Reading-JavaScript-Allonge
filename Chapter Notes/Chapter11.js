@@ -33,7 +33,7 @@ function variadic (fn) {
 
         }
     }
-};
+}
 
 var extend = variadic( function (consumer, providers) {
     var key,
@@ -57,6 +57,9 @@ function fluent (methodBody) {
         return this;
     }
 }
+
+function even (num) { return (num === 0) || odd( num - 1) }
+function odd (num) { return (num > 0) && even(num - 1) }
 //////////////////////////////////////////////////////////////////
 //                          Chapter 11                          //
 //                           New Ideas                          //
@@ -491,3 +494,55 @@ oneToFive();
 
 oneToFive();
 // => undefined
+
+function iteratorMap (iter, unaryFn) {
+    return function () {
+        var element;
+        element = iter();
+        if (element != null) {
+            return unaryFn.call(element, element);
+        } else {
+            return void 0;
+        }
+    }
+}
+
+function squaresIterator (iter) {
+    return iteratorMap(iter, function (n) {
+        return n * n;
+    })
+}
+
+function iteratorFilter (iter, unaryPredicateFn) {
+    return function () {
+        var element = iter();
+        while (element != null) {
+            if (unaryPredicateFn.call(element, element)) {
+                return element;
+            }
+            element = iter();
+        }
+
+        return void 0;
+    }
+}
+
+function oddsFilter (iter) {
+    return iteratorFilter(iter, odd);
+}
+
+foldingSum(take(oddsFilter(squaresIterator(FibonacciIterator())), 5));
+// => 205
+
+/*
+summary
+Untangling the concerns of how to iterate over data from what to do with data leads us to thinking
+of iterators and working directly with iterators. For example, we can map and filter iterators rather
+than trying to write separate map and filter functions or methods for each type of data structure.
+This leads to the possibility of working with lazy or infinite iterators
+
+caveat
+Once you pass an iterator to a function, you can expect that you no longer "own" that iterator,
+and that its state either has changed or will change.
+*/
+
