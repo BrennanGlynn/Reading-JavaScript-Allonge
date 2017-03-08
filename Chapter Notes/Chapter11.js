@@ -313,3 +313,76 @@ console.log(colorTodo instanceof ColorTodo);
 //////////////////////////////////////////////////////////////////
 //                     Functional Iterators                     //
 //////////////////////////////////////////////////////////////////
+
+function sum (array) {
+    var number,
+        total = 0,
+        len = array.length;
+
+    for (i = 0; i < len; i++) {
+        number = array[i];
+        total += number;
+    }
+
+    return total;
+}
+
+// What if we want the sum of a linked list? Tree of numbers?
+
+// One option is to write an iterator for each data structure and write sum to take an iterator as an arg
+
+var LinkedList, list;
+
+LinkedList = (function () {
+    function LinkedList(content, next) {
+        this.content = content;
+        this.next = next != null ? next : void 0;
+    }
+
+    LinkedList.prototype.appendTo = function (content) {
+        return new LinkedList(content, this);
+    };
+
+    LinkedList.prototype.tailNode = function () {
+        var nextThis;
+        return ((nextThis = this.next) != null ? nextThis.tailNode() : void 0) || this;
+    };
+
+    return LinkedList;
+})();
+
+function ListIterator (list) {
+    return function () {
+        var node;
+        node = list != null ? list.content : void 0;
+        list = list != null ? list.next : void 0;
+        return node;
+    }
+}
+
+function newSum(iter) {
+    var number, total;
+    total = 0;
+    number = iter();
+    while (number != null) {
+        total += number;
+        number = iter();
+    }
+    return total;
+}
+
+list = new LinkedList(5).appendTo(4).appendTo(3).appendTo(2).appendTo(1);
+
+console.log(newSum(ListIterator(list)));
+// => 15
+
+function ArrayIterator (array) {
+    var index;
+    index = 0;
+    return function () {
+        return array[index++];
+    }
+}
+
+console.log(newSum(ArrayIterator([1,2,3,4,5])));
+// => 15
