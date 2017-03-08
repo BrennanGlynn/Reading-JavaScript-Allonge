@@ -34,7 +34,7 @@ function variadic (fn) {
 
         }
     }
-};
+}
 
 var extend = variadic( function (consumer, providers) {
     var key,
