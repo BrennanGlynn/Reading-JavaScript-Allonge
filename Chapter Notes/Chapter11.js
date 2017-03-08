@@ -611,6 +611,16 @@ list.tailNode().next = list.next;
 console.log(tortoiseDetectorTwo(list));
 // => true
 
-//////////////////////////////////////////////////////////////////
-//             A Drunken Walk Across A Checkerboard             //
-//////////////////////////////////////////////////////////////////
+
+/////Laptop Trampolining
+
+function factorial (n) {
+    var _factorial = function myself (acc, n) {
+        return n ? myself(acc * n, n - 1) : acc
+    };
+
+    return _factorial(1, n);
+}
+
+factorial(40000);
+// RangeError: Maximum call stack size exceeded
