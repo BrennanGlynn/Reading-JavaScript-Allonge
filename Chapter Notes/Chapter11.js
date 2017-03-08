@@ -546,3 +546,71 @@ Once you pass an iterator to a function, you can expect that you no longer "own"
 and that its state either has changed or will change.
 */
 
+//////////////////////////////////////////////////////////////////
+//              Refactoring to Functional Iterators             //
+//////////////////////////////////////////////////////////////////
+
+function tortoiseAndHareLoopDetector (list) {
+    var hare = list.next,
+        tortoise = list,
+        nexthare;
+
+    while ((tortoise != null) && (hare != null)) {
+        if (tortoise === hare) {
+            return true
+        }
+        tortoise = tortoise.next;
+        hare = (nexthare = hare.next) != null ? nexthare.next : void 0;
+    }
+    return false;
+}
+
+// A functional iterator is a stateful function that iterates of a data structure
+// Every time you call it, it returns the next element from the data structure
+// If and when it completes its traversal, it returns undefined
+
+// Here is a function that takes an array and returns a functional iterator over the array
+
+function ArrayIterator (array) {
+    var index = 0;
+    return function () {
+        return array[index++]
+    }
+}
+
+// Iterators allow us to write functions to operate on iterators instead of data structures.
+// Now we'll refactor the tortoise and hare to use iterators
+
+LinkedList.prototype.iterator = function () {
+    var list = this;
+    return function () {
+        var value = list != null ? list.content : void 0;
+        list = list != null ? list.next : void 0;
+        return value;
+    }
+};
+
+function tortoiseDetectorTwo (iterable) {
+    var tortoise = iterable.iterator(),
+        hare = iterable.iterator(),
+        tortoiseValue,
+        hareValue;
+    while (((tortoiseValue = tortoise()) != null) && ((hare(), hareValue = hare()) != null)) {
+        if (tortoiseValue === hareValue) {
+            return true
+        }
+    }
+    return false
+}
+
+console.log(tortoiseDetectorTwo(list));
+// => false
+
+list.tailNode().next = list.next;
+
+console.log(tortoiseDetectorTwo(list));
+// => true
+
+//////////////////////////////////////////////////////////////////
+//             A Drunken Walk Across A Checkerboard             //
+//////////////////////////////////////////////////////////////////
