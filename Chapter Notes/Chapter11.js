@@ -386,3 +386,108 @@ function ArrayIterator (array) {
 
 console.log(newSum(ArrayIterator([1,2,3,4,5])));
 // => 15
+
+function fold (iter, binaryFn, seed) {
+    var acc = seed,
+        element = iter();
+    while (element != null) {
+        acc = binaryFn.call(element, acc, element);
+        element = iter();
+    }
+    return acc;
+}
+
+function foldingSum (iter) {
+    return fold(iter, (function (x, y) {
+        return x + y;
+    }), 0);
+}
+
+console.log(foldingSum(ArrayIterator([1,2,3,4,5])));
+// => 15
+
+function NumberIterator (base) {
+    var number;
+
+    if (base == null) {
+        base = 0;
+    }
+    number = base;
+    return function () {
+        return number++
+    }
+}
+
+fromOne = NumberIterator(1);
+
+fromOne();
+// => 1
+
+fromOne();
+// => 2
+
+fromOne();
+// => 3
+
+fromOne();
+// => 4
+
+fromOne();
+// => 5
+
+function FibonacciIterator () {
+    var previous = 0,
+        current = 1;
+    return function () {
+        var value, tempValues;
+        value = current;
+        tempValues = [current, current + previous];
+        previous = tempValues[0];
+        current = tempValues[1];
+        return value;
+    }
+}
+
+fib = FibonacciIterator();
+
+fib();
+// => 1
+fib();
+// => 1
+fib();
+// => 3
+fib();
+// => 5
+
+// A function that starts with a seed and expands it into a data structure is called an unfold.
+
+take = function (iter, numberToTake) {
+    var count = 0;
+    return function () {
+        if (++count <= numberToTake) {
+            return iter();
+        } else {
+            return void 0;
+        }
+    }
+};
+
+oneToFive = take(NumberIterator(1), 5);
+
+oneToFive();
+// => 1
+
+oneToFive();
+// => 2
+
+oneToFive();
+// => 3
+
+oneToFive();
+// => 4
+
+oneToFive();
+// => 5
+
+oneToFive();
+// => undefined
